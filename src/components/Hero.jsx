@@ -1,47 +1,41 @@
 import { useGSAP } from "@gsap/react";
-import { SplitText } from "gsap/all";
 import gsap from "gsap";
-import React, { useRef } from "react";
+import { SplitText } from "gsap/all";
+import { useRef } from "react";
 import { useMediaQuery } from "react-responsive";
 
 const Hero = () => {
   const videoRef = useRef();
 
-  const ismobile = useMediaQuery({ maxWidth: 767 });
+  const isMobile = useMediaQuery({ maxWidth: 767 });
 
   useGSAP(() => {
     const heroSplit = new SplitText(".title", {
-      type: "chars,words", // split the text into characters and words
-    });
-    const paragraphSplit = new SplitText(".subtitle", {
-      type: "lines", // split the text into lines
+      type: "chars, words",
     });
 
+    const paragraphSplit = new SplitText(".subtitle", {
+      type: "lines",
+    });
+
+    // Apply text-gradient class once before animating
     heroSplit.chars.forEach((char) => char.classList.add("text-gradient"));
 
-    gsap.from(
-      heroSplit.chars,
-      {
-        yPercent: 100,
-        duration: 1.8,
-        ease: "expo.inOut",
-        stagger: 0.06,
-      },
-      []
-    );
+    gsap.from(heroSplit.chars, {
+      yPercent: 100,
+      duration: 1.8,
+      ease: "expo.out",
+      stagger: 0.06,
+    });
 
-    gsap.from(
-      paragraphSplit.lines,
-      {
-        opacity: 0,
-        yPercent: 100,
-        duration: 1.8,
-        ease: "expo.inOut",
-        stagger: 0.06,
-        delay: 1, // delay the animation of the lines after the characters are animated to make it look like the lines are coming in one by one
-      },
-      []
-    );
+    gsap.from(paragraphSplit.lines, {
+      opacity: 0,
+      yPercent: 100,
+      duration: 1.8,
+      ease: "expo.out",
+      stagger: 0.06,
+      delay: 1,
+    });
 
     gsap
       .timeline({
@@ -49,18 +43,17 @@ const Hero = () => {
           trigger: "#hero",
           start: "top top",
           end: "bottom top",
-          scrub: true, // scrub the animation to make it look like the animation is happening while scrolling
+          scrub: true,
         },
       })
-      .to(".right-leaf", { y: 200, scale: 1.2 }, 0)
-      .to(".left-leaf", { y: -200 }, 0);
+      .to(".right-leaf", { y: 200 }, 0)
+      .to(".left-leaf", { y: -200 }, 0)
+      .to(".arrow", { y: 100 }, 0);
 
-    const startValue = ismobile ? "top 50%" : "center 60%";
-    const endValue = ismobile ? "120% top " : "bottom top";
+    const startValue = isMobile ? "top 50%" : "center 60%";
+    const endValue = isMobile ? "120% top" : "bottom top";
 
-    //video animation timeline
-    //create the timeline with a default duration
-    const tl = gsap.timeline({
+    let tl = gsap.timeline({
       scrollTrigger: {
         trigger: "video",
         start: startValue,
@@ -76,22 +69,26 @@ const Hero = () => {
       });
     };
   }, []);
+
   return (
     <>
-      <section id="hero" className="noisy">
+      <section id="hero" className="noisy md:px-10">
         <h1 className="title">MOJITO</h1>
+
         <img
           src="/images/hero-left-leaf.png"
-          alt="left leaf"
+          alt="left-leaf"
           className="left-leaf"
         />
         <img
           src="/images/hero-right-leaf.png"
-          alt="right leaf"
+          alt="right-leaf"
           className="right-leaf"
         />
 
         <div className="body">
+          {/* <img src="/images/arrow.png" alt="arrow" className="arrow" /> */}
+
           <div className="content">
             <div className="space-y-5 hidden md:block">
               <p>Cool. Crisp. Classic.</p>
@@ -106,18 +103,19 @@ const Hero = () => {
                 creative flair, and timeless recipes — designed to delight your
                 senses.
               </p>
-              <a href="#cocktails">View Cocktails</a>
+              <a href="#cocktails">View cocktails</a>
             </div>
           </div>
         </div>
       </section>
+
       <div className="video absolute inset-0">
         <video
           ref={videoRef}
-          src="/videos/output.mp4"
           muted
           playsInline
           preload="auto"
+          src="/videos/output.mp4"
         />
       </div>
     </>
